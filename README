@@ -1,0 +1,122 @@
+1)Google cloud console
+        Create a project
+2)Kubernetes—>Create cluster
+
+3)Shell
+      a) clone git repository
+      b)build the project
+           ./mvnw clean install
+       c) check the jar created at target folder
+            cd target
+      d) Run jar to make spring app up
+            java -jar jarname
+    1.  Go to webpreview ( which helps in launching app url)
+    2. https://8080-dot-9414945-dot-devshell.appspot.com/?authuser=0&environment_name=default
+    3. Change above url with endpoint
+        1. https://8080-dot-9414945-dot-devshell.appspot.com/hello
+        2. Stop the service by control + Z 
+4. Create a image and copy to Container registry
+5. ./mvnw com.google.cloud.tools:jib-maven-plugin:build -Dimage=gcr.io/$GOOGLE_CLOUD_PROJECT/springboot-test:v1
+                    or
+        ./mvnw com.google.cloud.tools:jib-maven-plugin:build -Dimage=gcr.io/upheld-conduit-256805/spring-boot-example:v1
+6. Verify the Container Registry updated with image
+7. Command to login to the K8s cluster from Cloud Shell
+     gcloud container clusters get-credentials test-cluster-1 --zone us-central1-a
+/kubernetes$ gcloud container clusters get-credentials test-cluster-1 --zone us-central1-aERROR: (gcloud.container.clusters.get-credentials) The project property is set to the empty string, which is invalid.To set your project, run: $ gcloud config set project PROJECT_IDor to unset it, run: $ gcloud config unset project
+$gcloud config set project upheld-conduit-256805
+
+8. Verify weather connected to cluster or not
+        kubectl get pods
+List Services
+
+kubectl get services
+
+List Deployments
+
+kubectl get deployments
+
+
+Run the Docker image
+Command to run the docker image which we created in the previous step
+docker run -ti --rm -p 8080:8080 gcr.io/$GOOGLE_CLOUD_PROJECT/spring-boot-example:v1
+
+docker run -ti --rm -p 8080:8080 gcr.io/upheld-conduit-256805/spring-boot-example:v1
+
+Check the application from web preview, app should work from local docker image
+
+Stop the Service: control + C
+
+Deploy an image
+kubectl run spring-boot-example --image=gcr.io/$GOOGLE_CLOUD_PROJECT/spring-boot-example:v1 --port=8080
+kubectl run spring-boot-example --image=gcr.io/upheld-conduit-256805/spring-boot-example:v1 --port=8080
+Note:
+kubectl run --generator=deployment/apps.v1 is DEPRECATED and will be removed in a future version. Use kubectl run --generator=run-pod/v1 or kubectl create instead.
+deployment.apps/spring-boot-example created
+
+Check the Deployments:
+kubectl get deployments
+)$ kubectl get deployments
+NAME                     READY     UP-TO-DATE AVAILABLE     AGE
+spring-boot-example        1/1         1        1           2m9s
+
+Check the pods:
+kubectl get pods
+$ kubectl get pods
+NAME                                    READY         STATUS         RESTARTS         AGE
+spring-boot-example-74bf78d8d-t5tmn     1/1             Running          0           3m52s
+
+
+
+Pods are not able to connect, for that need to create a service and load balancer, which creates external IP.
+Expose Load Balancer
+
+kubectl expose deployment spring-boot-example --type=LoadBalancer
+$ kubectl expose deployment spring-boot-example --type=LoadBalancer
+service/spring-boot-example exposed
+
+Now check the services again to see load balancer with external IP
+$ kubectl get services
+NAME                             TYPE                 CLUSTER-IP         EXTERNAL-IP         PORT(S)                AGE
+kubernetes                     ClusterIP             10.106.0.1             <none>                 443/TCP          6h30m
+spring-boot-example             LoadBalancer         10.106.3.224        104.197.206.67     8080:32551/TCP          3m28s
+
+Access the app with external IP
+104.197.206.67:8080/
+
+Scale deployments
+
+kubectl scale deployment spring-boot-example --replicas=3
+$ kubectl scale deployment spring-boot-example --replicas=3deployment.extensions/spring-boot-example scaled
+
+$ kubectl get pods
+NAME                                        READY                 STATUS                 RESTARTS             AGE
+spring-boot-example-74bf78d8d-7mswr         1/1                  Running                    0                  28s
+spring-boot-example-74bf78d8d-t5tmn         1/1                  Running                    0                  21m
+spring-boot-example-74bf78d8d-z2bfx         1/1                  Running                    0                  28s
+
+$ kubectl get deployments
+NAME                             READY             UP-TO-DATE             AVAILABLE             AGE
+spring-boot-example              3/3                    3                      3                 23m
+
+$$$$$$$$$$
+
+
+YML 
+Link to Brandon Potter's YML builder - https://static.brandonpotter.com/kubernetes/DeploymentBuilder.html
+
+
+$ gcloud container clusters get-credentials test-cluster-1 --zone us-central1-a
+Fetching cluster endpoint and auth data.kubeconfig entry generated for test-cluster-1.
+biruusa@cloudshell:~/kubernetes/target (upheld-conduit-256805)$ kubectl get pods
+No resources found.
+biruusa@cloudshell:~/kubernetes/target (upheld-conduit-256805)$ kubectl get services
+NAME                                         TYPE                 CLUSTER-IP                 EXTERNAL-IP                             PORT(S)             AGE
+kubernetes                                 ClusterIP                 10.106.0.1                 <none>                                     443/TCP                    133m
+biruusa@cloudshell:~/kubernetes/target (upheld-conduit-256805)$ kubectl get deployment
+No resources found.
+
+Apply/create xml to generate pods, service n deployment
+biruusa@cloudshell:~/kubernetes/target (upheld-conduit-256805)$ kubectl apply -f deployment.yml
+deployment.extensions/spring-boot-example created
+
+kubectl apply -f service.yml
