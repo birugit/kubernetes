@@ -1,8 +1,8 @@
-1)Google cloud console
+1)**Google cloud console**
         Create a project
 2)Kubernetes—>Create cluster
 
-3)Shell
+3)**Shell**
       a) clone git repository
       b)build the project
            ./mvnw clean install
@@ -15,19 +15,19 @@
     3. Change above url with endpoint
         1. https://8080-dot-9414945-dot-devshell.appspot.com/hello
         2. Stop the service by control + Z 
-4. Create a image and copy to Container registry
+4.**Create a image and copy to Container registry**
 5. ./mvnw com.google.cloud.tools:jib-maven-plugin:build -Dimage=gcr.io/$GOOGLE_CLOUD_PROJECT/springboot-test:v1
                     or
         ./mvnw com.google.cloud.tools:jib-maven-plugin:build -Dimage=gcr.io/upheld-conduit-256805/spring-boot-example:v1
-6. Verify the Container Registry updated with image
-7. Command to login to the K8s cluster from Cloud Shell
+6. **Verify the Container Registry updated with image**
+7. **Command to login to the K8s cluster from Cloud Shell**
      gcloud container clusters get-credentials test-cluster-1 --zone us-central1-a
 /kubernetes$ gcloud container clusters get-credentials test-cluster-1 --zone us-central1-aERROR: (gcloud.container.clusters.get-credentials) The project property is set to the empty string, which is invalid.To set your project, run: $ gcloud config set project PROJECT_IDor to unset it, run: $ gcloud config unset project
 $gcloud config set project upheld-conduit-256805
 
-8. Verify weather connected to cluster or not
+8. **Verify weather connected to cluster or not**
         kubectl get pods
-List Services
+**List Services**
 
 kubectl get services
 
@@ -36,7 +36,7 @@ List Deployments
 kubectl get deployments
 
 
-Run the Docker image
+**Run the Docker image**
 Command to run the docker image which we created in the previous step
 docker run -ti --rm -p 8080:8080 gcr.io/$GOOGLE_CLOUD_PROJECT/spring-boot-example:v1
 
@@ -44,7 +44,7 @@ docker run -ti --rm -p 8080:8080 gcr.io/upheld-conduit-256805/spring-boot-exampl
 
 Check the application from web preview, app should work from local docker image
 
-Stop the Service: control + C
+**Stop the Service:** control + C
 
 Deploy an image
 kubectl run spring-boot-example --image=gcr.io/$GOOGLE_CLOUD_PROJECT/spring-boot-example:v1 --port=8080
@@ -102,7 +102,7 @@ $$$$$$$$$$
 
 
 YML 
-Link to Brandon Potter's YML builder - https://static.brandonpotter.com/kubernetes/DeploymentBuilder.html
+**Link to Brandon Potter's YML builder** - https://static.brandonpotter.com/kubernetes/DeploymentBuilder.html
 
 
 $ gcloud container clusters get-credentials test-cluster-1 --zone us-central1-a
